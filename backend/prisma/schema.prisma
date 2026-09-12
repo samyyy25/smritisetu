@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id                    String         @id @default(uuid())
+  name                  String
+  avatarUrl             String?
+  age                   Int?           @default(72)
+  emergencyContactName  String?        @default("Priya Sharma (Daughter)")
+  emergencyContactPhone String?        @default("+91 98765 43210")
+  preferredLanguage     String         @default("English")
+  syntheticProfile      String?        // "stable" | "declining" | null (for validation only, NEVER exposed in caregiver UI)
+  createdAt             DateTime       @default(now())
+
+  // Relations
+  gameSessions          GameSession[]
+  memories              Memory[]
+  alerts                Alert[]
+  dailyRoutines         DailyRoutine[]
+  reminders             Reminder[]
+  caregivers            Caregiver[]
+  savedPlaces           SavedPlace[]
+  locationLogs          LocationLog[]
+}
+
+model SavedPlace {
+  id           String        @id @default(uuid())
+  patientId    String
+  patient      Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  label        String        // e.g., "My Daughter's House", "Usual Grocery Shop", "Community Temple", "Home"
+  latitude     Float
+  longitude    Float
+  address      String?
+  category     String        @default("Other") // "Home", "Family", "Shop", "Worship", "Clinic", "Other"
+  iconType     String?       @default("map-pin") // "home", "heart", "shopping-bag", "building", "activity", "map-pin"
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  locationLogs LocationLog[]
+
+  @@index([patientId])
+}
+
+model LocationLog {
+  id           String      @id @default(uuid())
+  patientId    String
+  patient      Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  savedPlaceId String?
+  savedPlace   SavedPlace? @relation(fields: [savedPlaceId], references: [id], onDelete: SetNull)
+  latitude     Float
+  longitude    Float
+  timestamp    DateTime    @default(now())
+
+  @@index([patientId, timestamp])
+}
+
+
+
+model GameSession {
+  id                String    @id @default(uuid())
+  patientId         String
+  patient           Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  gameType          String    // "memory_match", "who_is_this", "festival_memories", "remember_and_speak", "daily_challenge", "life_story"
+  questionId        String?   // Nullable for session-level games like Remember & Speak
+  responseTimeMs    Int
+  sessionDurationMs Int
+  correct           Boolean
+  hintUsed          Boolean   @default(false)
+  answerChanges     Int       @default(0)
+  difficultyLevel   String    @default("easy")
+  startedAt         DateTime  @default(now())
+  completedAt       DateTime?
+  timestamp         DateTime  @default(now())
+  metadataJson      String?   // JSON string holding game-specific signals (sequence accuracy, pause count, transcript, etc.)
+
+  @@index([patientId, timestamp])
+  @@index([patientId, gameType])
+}
+
+model Memory {
+  id           String    @id @default(uuid())
+  patientId    String
+  patient      Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  photoUrl     String?
+  videoUrl     String?
+  mediaType    String?   @default("photo") // "photo" | "video"
+  personName   String?
+  relationship String?
+  year         String?
+  place        String?
+  description  String?
+  voiceNoteUrl String?
+  createdAt    DateTime  @default(now())
+
+  @@index([patientId])
+}
+
+model Alert {
+  id                String    @id @default(uuid())
+  patientId         String
+  patient           Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  alertType         String    // "COGNITIVE_CHANGE", "MISSED_ROUTINE", etc.
+  reasonText        String
+  metricChangesJson String?   // JSON holding reactionTimeIncrease, accuracyDrop, etc.
+  createdAt         DateTime  @default(now())
+  status            String    @default("ACTIVE") // "ACTIVE", "MONITOR", "RESOLVED"
+
+  @@index([patientId, createdAt])
+}
+
+model DailyRoutine {
+  id          String    @id @default(uuid())
+  patientId   String
+  patient     Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  timeOfDay   String    // e.g. "08:30 AM"
+  activity    String    // e.g. "Morning Medicine & Chai"
+  isCompleted Boolean   @default(false)
+  category    String    @default("Health")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([patientId])
+}
+
+model Caregiver {
+  id           String    @id @default(uuid())
+  name         String
+  relation     String
+  phoneNumber  String?
+  email        String?
+  patientId    String
+  patient      Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([patientId])
+}
+
+model Reminder {
+  id        String   @id @default(uuid())
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  time      String   // e.g. "8:00 AM"
+  label     String   // e.g. "Breakfast"
+  iconType  String   // e.g. "breakfast", "medicine", "lunch", "walk"
+  completed Boolean  @default(false)
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([patientId, date])
+}
+

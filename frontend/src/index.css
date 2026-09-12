@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
+}
+
+body {
+  background-color: #FAF7F2;
+  color: #1F2937;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbars for clean aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(13, 92, 77, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(13, 92, 77, 0.4);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes alertAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.97) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-alert-appear {
+  animation: alertAppear 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Safe area support for iOS / Android gestures */
+.pb-safe {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+}
+
+/* Hide scrollbar for clean device viewport simulator */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* =========================================================================
+   EASY MODE (Large Text, High Contrast, Enhanced Touch Targets)
+   ========================================================================= */
+.easy-mode {
+  font-size: 110%;
+}
+
+.easy-mode button,
+.easy-mode a,
+.easy-mode input,
+.easy-mode textarea {
+  min-height: 48px;
+}
+
+.easy-mode .text-slate-400,
+.easy-mode .text-slate-500 {
+  color: #1e293b !important;
+  font-weight: 600;
+}
+
+.easy-mode .text-slate-600 {
+  color: #0f172a !important;
+  font-weight: 600;
+}
+
+.easy-mode .border-slate-100,
+.easy-mode .border-slate-200 {
+  border-color: #94a3b8 !important;
+  border-width: 1.5px !important;
+}
+
+.easy-mode .bg-slate-50 {
+  background-color: #f1f5f9 !important;
+}
+
+.easy-mode h1,
+.easy-mode h2,
+.easy-mode h3 {
+  letter-spacing: -0.01em;
+  font-weight: 800 !important;
+}
+
+.easy-mode p {
+  line-height: 1.65 !important;
+}
+
+/* =========================================================================
+   LEAFLET MAP & ACCESSIBILITY STYLES
+   ========================================================================= */
+.leaflet-container {
+  font-family: inherit;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.patient-pulse-marker {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  background-color: #0D5C4D;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(13, 92, 77, 0.6);
+}
+
+.patient-pulse-marker::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid #10B981;
+  animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.custom-place-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.custom-place-pin:hover {
+  transform: scale(1.15);
+}
+
+
