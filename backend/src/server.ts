@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import healthRouter from './routes/health';
@@ -35,7 +35,7 @@ app.use('/api', placesRouter);
 
 
 // Root informational endpoint
-app.get('/', (_req, res) => {
+app.get('/', (_req: Request, res: Response) => {
   res.json({
     message: 'SmritiSetu API Server',
     healthCheck: '/api/health',
